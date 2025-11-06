@@ -8,6 +8,7 @@ from isaaclab_assets.robots.anymal import ANYMAL_D_CFG
 from isaaclab.assets import ArticulationCfg
 from isaaclab.actuators import DCMotorCfg
 from pace_sim2real.utils.pace_actuator_cfg import PaceDCMotorCfg
+from pace_sim2real.tasks.manager_based.pace_sim2real.pace_sim2real_env_cfg import PaceSim2realEnvCfg, PaceSim2realSceneCfg
 
 
 ANYDRIVE_3_SIMPLE_ACTUATOR_CFG = PaceDCMotorCfg(
@@ -15,38 +16,29 @@ ANYDRIVE_3_SIMPLE_ACTUATOR_CFG = PaceDCMotorCfg(
     saturation_effort=140.0,
     effort_limit=89.0,
     velocity_limit=8.5,
-    stiffness={".*": 85.0},
-    damping={".*": 0.6},
-    encoder_bias=[0.0] * 12,
-    max_delay=10,
+    stiffness={".*": 85.0},  # P gain in Nm/rad
+    damping={".*": 0.6},  # D gain in Nm s/rad
+    encoder_bias=[0.0] * 12,  # encoder bias in radians
+    max_delay=10,  # max delay in simulation steps
 )
 
 
 @configclass
-class AnymalDPaceEnvCfg(LocomotionVelocityRoughEnvCfg):
+class ANYmalDPaceEnvCfg(PaceSim2realSceneCfg):
+    """Configuration for Anymal-D robot in Pace Sim2Real environment."""
+    robot: ArticulationCfg = ANYMAL_D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot", init_state=ArticulationCfg.InitialStateCfg(pos=(0.0, 0.0, 1.0)),
+                                                  actuators={"legs": ANYDRIVE_3_SIMPLE_ACTUATOR_CFG})
+
+
+@configclass
+class AnymalDPaceEnvCfg(PaceSim2realEnvCfg):
+
+    scene: ANYmalDPaceEnvCfg = ANYmalDPaceEnvCfg()
+
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
-        # switch robot to anymal-d
-        self.scene.robot = ANYMAL_D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot", init_state=ArticulationCfg.InitialStateCfg(pos=(0.0, 0.0, 2.0)),
-                                                actuators={"legs": ANYDRIVE_3_SIMPLE_ACTUATOR_CFG})
 
-        # fix in air
-        self.scene.robot.spawn.articulation_props.fix_root_link = True
+        # robot sim and control settings
         self.sim.dt = 0.0025  # 400Hz simulation
         self.decimation = 1  # 400Hz control
-        self.episode_length_s = 9999.0  # long episodes
-        self.actions.joint_pos.scale = 1.0  # makes actions = impedance control
-        self.viewer.lookat = (0.0, 0.0, 2.0)
-        self.viewer.eye = (2.0, 2.0, 3.0)
-
-        # change terrain to flat
-        self.scene.terrain.terrain_type = "plane"
-        self.scene.terrain.terrain_generator = None
-        # disable randomization for play
-        self.observations.policy.enable_corruption = False
-        # remove random pushing event
-        self.events.base_external_force_torque = None
-        self.events.push_robot = None
-        # no terrain curriculum
-        self.curriculum.terrain_levels = None
