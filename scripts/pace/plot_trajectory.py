@@ -94,7 +94,7 @@ if plot_trajectory:
     for i in range(trajectories.shape[1]):
         plt.figure()
         plt.plot(trajectories[:, i].cpu().numpy(), label="Sim")
-        plt.plot(real_trajectories[:, i].cpu().numpy() - encoder_bias[i].item(), label="Real")
+        plt.plot(real_trajectories[:, i].cpu().numpy() + encoder_bias[i].item(), label="Real")
         plt.plot(target_trajectories[:, i].cpu().numpy(), c="grey", label="Target", linestyle="--")
         plt.title(f"Joint {joint_names[i]}")  # Use joint names from config
         plt.xlabel("Time step")

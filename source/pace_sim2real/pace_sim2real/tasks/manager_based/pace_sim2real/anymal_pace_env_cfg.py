@@ -1,12 +1,7 @@
 from isaaclab.utils import configclass
 
-# from isaaclab.envs import ManagerBasedRLEnvCfg
-from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg
-
-
 from isaaclab_assets.robots.anymal import ANYMAL_D_CFG
 from isaaclab.assets import ArticulationCfg
-from isaaclab.actuators import DCMotorCfg
 from pace_sim2real.utils.pace_actuator_cfg import PaceDCMotorCfg
 from pace_sim2real.tasks.manager_based.pace_sim2real.pace_sim2real_env_cfg import PaceSim2realEnvCfg, PaceSim2realSceneCfg
 

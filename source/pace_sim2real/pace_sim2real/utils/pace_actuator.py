@@ -53,8 +53,8 @@ class PaceDCMotor(DCMotor):
     def compute(
         self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
     ) -> ArticulationActions:
-        control_action.joint_positions = self.positions_delay_buffer.compute(control_action.joint_positions - self.encoder_bias)
+        control_action.joint_positions = self.positions_delay_buffer.compute(control_action.joint_positions)
         control_action.joint_velocities = self.velocities_delay_buffer.compute(control_action.joint_velocities)
         control_action.joint_efforts = self.efforts_delay_buffer.compute(control_action.joint_efforts)
         # compute actuator model
-        return super().compute(control_action, joint_pos, joint_vel)
+        return super().compute(control_action, joint_pos + self.encoder_bias, joint_vel)
