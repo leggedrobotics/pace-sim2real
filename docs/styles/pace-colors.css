@@ -1,0 +1,7 @@
+body[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #0F70B7;
+}
+
+body[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #0F70B7;
+}
