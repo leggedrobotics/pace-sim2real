@@ -1,6 +1,6 @@
 site_name: PACE Sim2Real
 site_description: "Documentation for the PACE sim-to-real pipeline for legged robots."
-site_url: "https://leggedrobotics.github.io/pace-sim2real/"
+site_url:  # "https://pace.filipbjelonic.com/"
 
 repo_name: "leggedrobotics/pace-sim2real"
 repo_url: "https://github.com/leggedrobotics/pace-sim2real"
