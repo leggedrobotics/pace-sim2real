@@ -1,0 +1,57 @@
+body[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #0F70B7;
+}
+
+body[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #0F70B7;
+}
+
+.video-wrapper {
+  position: relative;
+  max-width: 900px;
+  margin: auto;
+}
+
+.video-wrapper video {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.youtube-overlay {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.youtube-overlay:hover {
+  background: #000000;
+  transform: scale(1.05);
+}
+
+/* Make all custom plots full-width in the content column */
+.md-typeset .plot {
+  display: block;
+  width: 100% !important;   /* force full width */
+  height: auto;
+  margin: 0 auto;           /* optional: center if smaller */
+}
+
+/* Default: show light, hide dark */
+.plot-dark { display: none; }
+
+/* Dark theme in Material (usually "slate") */
+[data-md-color-scheme="slate"] .plot-light { display: none; }
+[data-md-color-scheme="slate"] .plot-dark  { display: block; }
+
+/* Light theme (usually "default") */
+[data-md-color-scheme="default"] .plot-light { display: block; }
+[data-md-color-scheme="default"] .plot-dark  { display: none; }
