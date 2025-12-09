@@ -35,7 +35,7 @@ We recommend using the **conda** or **uv** installation method, as this simplifi
 Clone or copy this project separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
 
 ```bash
-git clone git@github.com:<your-org>/pace-sim2real.git
+git clone https://github.com/leggedrobotics/pace-sim2real.git
 cd pace-sim2real
 ```
 
@@ -142,7 +142,7 @@ See the LICENSE file for details.
 The PACE project is actively maintained by:
 
 - Filip Bjelonic (ETH Zurich, RSL)
-- René Zurbrüegg (ETH Zurich, RSL)
+- René Zurbrügg (ETH Zurich, RSL)
 - Oliver Fischer (ETH Zurich, RSL)
 
 The maintainers are responsible for reviewing contributions, managing issues, and guiding the technical direction of the framework.
@@ -155,7 +155,7 @@ We would like to thank the RSL Learning Group for many insightful discussions th
 
 We also acknowledge Zichong, Stephan, Efe, Yuntao, René, Clemens, Ryo, Alexander, and Fabio for employing and extending the PACE framework in their own research, providing valuable feedback and practical insights.
 
-We further thank Oliver Fischer and René Zurbrüegg for their direct contributions to the codebase and their ongoing support as project maintainers.
+We further thank Oliver Fischer and René Zurbrügg for their direct contributions to the codebase and their ongoing support as project maintainers.
 
 We also thank the early testers — Oliver, Clemens and Yasmine — who evaluated the framework prior to its public release and provided valuable feedback on usability, stability, and documentation improvements.
 
@@ -222,6 +222,8 @@ Examples of packages that can often be safely excluded:
 
 Internal feedback is highly welcome during this phase.
 Please report issues, unclear steps, or suggestions directly via GitHub issues or internal channels.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 
 ---
 
