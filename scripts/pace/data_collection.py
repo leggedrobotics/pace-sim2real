@@ -70,6 +70,8 @@ def main():
     articulation.data.default_joint_viscous_friction_coeff[:, joint_ids] = damping
     articulation.write_joint_friction_coefficient_to_sim(friction, joint_ids=joint_ids, env_ids=torch.tensor([0]))
     articulation.data.default_joint_friction_coeff[:, joint_ids] = friction
+    articulation.write_joint_dynamic_friction_coefficient_to_sim(friction, joint_ids=joint_ids, env_ids=torch.tensor([0]))
+    articulation.data.default_joint_dynamic_friction_coeff[:, joint_ids] = friction
     drive_types = articulation.actuators.keys()
     for drive_type in drive_types:
         drive_indices = articulation.actuators[drive_type].joint_indices

@@ -83,7 +83,7 @@ time = config["time"]  # time
 print(f"Best parameter set: {mean}")
 print(f"Armature params: {mean[:len(joint_order)]}")
 print(f"Viscous friction params: {mean[len(joint_order):2 * len(joint_order)]}")
-print(f"Static friction params: {mean[2 * len(joint_order):3 * len(joint_order)]}")
+print(f"Static/dynamic friction params: {mean[2 * len(joint_order):3 * len(joint_order)]}")
 print(f"Encoder bias params: {mean[3 * len(joint_order):4 * len(joint_order)]}")
 print(f"Delay param: {mean[-1].item()}")
 encoder_bias = mean[3 * len(joint_order):4 * len(joint_order)]  # extract encoder bias

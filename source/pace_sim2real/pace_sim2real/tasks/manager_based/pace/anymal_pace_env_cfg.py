@@ -17,7 +17,10 @@ ANYDRIVE_PACE_ACTUATOR_CFG = PaceDCMotorCfg(
     velocity_limit=8.5,
     stiffness={".*": 85.0},  # P gain in Nm/rad
     damping={".*": 0.6},  # D gain in Nm s/rad
-    encoder_bias=[0.0] * 12,  # encoder bias in radians
+    encoder_bias={".*": 0.0},  # encoder bias in radians
+    static_friction={".*": 0.0},  # static friction coefficient (Nm)
+    dynamic_friction={".*": 0.0},  # dynamic friction coefficient (Nm)
+    viscous_friction={".*": 0.0},  # viscous friction coefficient (Nm s/rad)
     max_delay=10,  # max delay in simulation steps
 )
 
