@@ -18,5 +18,5 @@ class PaceDCMotorCfg(DCMotorCfg):
     This class extends the base DCMotorCfg with Pace-specific parameters.
     """
     class_type: type = pace_actuator.PaceDCMotor
-    encoder_bias: list[float] | float | None = 0.0
+    encoder_bias: dict[str, float] | float | None = 0.0
     max_delay: torch.int | None = 0

@@ -39,7 +39,7 @@ class PaceDCMotor(DCMotor):
                     f"encoder_bias must have {self.num_joints} elements (one per joint), "
                     f"but got {len(cfg.encoder_bias)}: {cfg.encoder_bias}"
                 )
-        self.encoder_bias = torch.tensor(cfg.encoder_bias, device=self._device).unsqueeze(0).repeat(self._num_envs, 1)
+        self.encoder_bias = self._parse_joint_parameter(cfg.encoder_bias, 0.0)
 
         self.torques_delay_buffer = DelayBuffer(cfg.max_delay + 1, self._num_envs, device=self._device)
         self.torques_delay_buffer.set_time_lag(cfg.max_delay, torch.arange(self._num_envs, device=self._device))
