@@ -252,22 +252,10 @@ The paper has been accepted for publication in **The International Journal of Ro
 
 ## ⭐ Star History
 
-<a href="https://www.star-history.com/#leggedrobotics/pace-sim2real&Date">
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://api.star-history.com/svg?repos=leggedrobotics/pace-sim2real&type=Date&theme=dark"
-    />
-    <source
-      media="(prefers-color-scheme: light)"
-      srcset="https://api.star-history.com/svg?repos=leggedrobotics/pace-sim2real&type=Date"
-    />
-    <img
-      alt="Star History Chart"
-      src="https://api.star-history.com/svg?repos=leggedrobotics/pace-sim2real&type=Date"
-    />
-  </picture>
-</a>
+[![PACE Star History](docs/assets/star-history.svg)](
+  https://pace.filipbjelonic.com/star-history/
+)
+
 
 ---
 

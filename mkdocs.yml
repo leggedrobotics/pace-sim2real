@@ -44,6 +44,7 @@ nav:
     - Basics: tutorials/basics.md
     - Advanced: tutorials/advanced.md
     - Best practices: tutorials/best_practice.md
+  - Github Stars: star-history.md
   #   - Simulation: simulation.md
   #   - Real-world: real-world.md
   # - Concepts:
@@ -75,6 +76,8 @@ markdown_extensions:
 
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js
+  - javascripts/star-history.js
 
 extra_css:
   - styles/pace-colors.css

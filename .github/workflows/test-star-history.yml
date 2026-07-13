@@ -1,0 +1,90 @@
+name: Update star history
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Monday at 04:17 UTC
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-star-history
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Generate star-history data and SVG
+        env:
+          # Fine-grained PAT with access only to pace-sim2real
+          # and Repository metadata: Read-only.
+          GITHUB_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
+        run: |
+          python scripts/generate_star_history.py \
+            --repository "${{ github.repository }}" \
+            --output-json docs/assets/star-history.json \
+            --output-svg docs/assets/star-history.svg
+
+      - name: Validate generated assets
+        run: |
+          test -s docs/assets/star-history.json
+          test -s docs/assets/star-history.svg
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path("docs/assets/star-history.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          expected_repository = os.environ["GITHUB_REPOSITORY"]
+
+          assert data["repository"] == expected_repository
+          assert data["total_stars"] >= 0
+          assert data["stars"], "Star history is empty"
+
+          counts = [point["count"] for point in data["stars"]]
+          assert counts == sorted(counts), "Star counts are not monotonic"
+          assert counts[-1] == data["total_stars"]
+
+          print(
+              f"Validated {len(counts)} data points and "
+              f"{data['total_stars']} stars."
+          )
+          PY
+
+      - name: Commit updated assets
+        run: |
+          if git diff --quiet -- \
+            docs/assets/star-history.json \
+            docs/assets/star-history.svg; then
+            echo "Star-history assets are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            docs/assets/star-history.json \
+            docs/assets/star-history.svg
+
+          git commit -m "chore: update star history [skip ci]"
+          git push origin HEAD:main
