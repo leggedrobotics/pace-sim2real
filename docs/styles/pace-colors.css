@@ -55,3 +55,52 @@ body[data-md-color-scheme="slate"] {
 /* Light theme (usually "default") */
 [data-md-color-scheme="default"] .plot-light { display: block; }
 [data-md-color-scheme="default"] .plot-dark  { display: none; }
+
+.star-history-panel {
+  margin-top: 1.5rem;
+}
+
+.star-history-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+#star-history-total {
+  color: #0f70b7;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.star-history-summary-label {
+  color: var(--md-default-fg-color--light);
+  font-size: 1rem;
+}
+
+.star-history-chart-container {
+  position: relative;
+  width: 100%;
+  height: min(60vh, 600px);
+  min-height: 420px;
+  padding: 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.8rem;
+  background: var(--md-default-bg-color);
+  box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+#star-history-status {
+  margin-top: 0.75rem;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+@media screen and (max-width: 600px) {
+  .star-history-chart-container {
+    min-height: 340px;
+    padding: 0.5rem;
+  }
+}
