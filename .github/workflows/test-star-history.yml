@@ -3,7 +3,7 @@ name: Test star history
 on:
   push:
     branches:
-      - feature/star-history
+      - test/star-history
 
 permissions:
   contents: read
