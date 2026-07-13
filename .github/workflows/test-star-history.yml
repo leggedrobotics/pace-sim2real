@@ -1,0 +1,45 @@
+name: Test star history
+
+on:
+  push:
+    branches:
+      - feature/star-history
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Generate star-history data and SVG
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/generate_star_history.py \
+            --repository "${{ github.repository }}" \
+            --output-json docs/assets/star-history.json \
+            --output-svg docs/assets/star-history.svg
+
+      - name: Show generated files
+        run: |
+          ls -lh docs/assets/star-history.*
+          python -m json.tool docs/assets/star-history.json | head -50
+
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: pace-star-history-preview
+          path: |
+            docs/assets/star-history.json
+            docs/assets/star-history.svg
+          if-no-files-found: error
