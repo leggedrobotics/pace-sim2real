@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate star-history data and SVG
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
         run: |
           python scripts/generate_star_history.py \
             --repository "${{ github.repository }}" \
