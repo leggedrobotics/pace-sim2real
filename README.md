@@ -252,7 +252,7 @@ The paper has been accepted for publication in **The International Journal of Ro
 
 ## ⭐ Star History
 
-[![PACE Star History](docs/assets/star-history.svg)](
+[![PACE Star History](https://raw.githubusercontent.com/leggedrobotics/pace-sim2real/star-history-data/star-history.svg)](
   https://pace.filipbjelonic.com/star-history/
 )
 

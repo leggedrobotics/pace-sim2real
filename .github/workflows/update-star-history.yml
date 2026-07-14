@@ -19,61 +19,75 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@v6
         with:
           ref: main
+          path: source
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
-      - name: Generate star-history data and SVG
+      - name: Generate star-history assets
+        working-directory: source
         env:
-          # Fine-grained PAT with access only to pace-sim2real
-          # and Repository metadata: Read-only.
           GITHUB_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
         run: |
           python scripts/generate_star_history.py \
             --repository "${{ github.repository }}" \
-            --output-json docs/assets/star-history.json \
-            --output-svg docs/assets/star-history.svg
+            --output-json /tmp/star-history.json \
+            --output-svg /tmp/star-history.svg
 
       - name: Validate generated assets
         run: |
-          test -s docs/assets/star-history.json
-          test -s docs/assets/star-history.svg
+          test -s /tmp/star-history.json
+          test -s /tmp/star-history.svg
 
           python - <<'PY'
           import json
           import os
           from pathlib import Path
 
-          path = Path("docs/assets/star-history.json")
-          data = json.loads(path.read_text(encoding="utf-8"))
+          data = json.loads(
+              Path("/tmp/star-history.json").read_text(encoding="utf-8")
+          )
 
-          expected_repository = os.environ["GITHUB_REPOSITORY"]
-
-          assert data["repository"] == expected_repository
-          assert data["total_stars"] >= 0
+          assert data["repository"] == os.environ["GITHUB_REPOSITORY"]
           assert data["stars"], "Star history is empty"
 
           counts = [point["count"] for point in data["stars"]]
-          assert counts == sorted(counts), "Star counts are not monotonic"
+          assert counts == sorted(counts), "Counts are not monotonic"
           assert counts[-1] == data["total_stars"]
 
           print(
-              f"Validated {len(counts)} data points and "
+              f"Validated {len(counts)} points and "
               f"{data['total_stars']} stars."
           )
           PY
 
-      - name: Commit updated assets
+      - name: Publish assets branch
+        working-directory: source
         run: |
-          if git diff --quiet -- \
-            docs/assets/star-history.json \
-            docs/assets/star-history.svg; then
+          git fetch origin star-history-data || true
+
+          if git show-ref --verify --quiet \
+            refs/remotes/origin/star-history-data; then
+            git switch --detach origin/star-history-data
+          else
+            git switch --orphan star-history-data
+            git rm -rf . || true
+          fi
+
+          cp /tmp/star-history.json star-history.json
+          cp /tmp/star-history.svg star-history.svg
+
+          touch .nojekyll
+
+          git add star-history.json star-history.svg .nojekyll
+
+          if git diff --cached --quiet; then
             echo "Star-history assets are already current."
             exit 0
           fi
@@ -82,9 +96,5 @@ jobs:
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add \
-            docs/assets/star-history.json \
-            docs/assets/star-history.svg
-
-          git commit -m "chore: update star history [skip ci]"
-          git push origin HEAD:main
+          git commit -m "Update star history"
+          git push origin HEAD:star-history-data
