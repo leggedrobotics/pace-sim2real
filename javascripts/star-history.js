@@ -9,20 +9,10 @@
   const totalElement = document.getElementById("star-history-total");
   const statusElement = document.getElementById("star-history-status");
 
-  const isLocal =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
-
-  /*
-   * During local development, load the JSON from the local MkDocs site.
-   *
-   * In production, load it directly from the repository's main branch.
-   * This means that scheduled JSON updates become visible immediately
-   * without rebuilding the documentation website each time.
-   */
-  const dataUrl = isLocal
-    ? new URL("../assets/star-history.json", window.location.href)
-    : `https://raw.githubusercontent.com/leggedrobotics/pace-sim2real/main/docs/assets/star-history.json?ts=${Date.now()}`;
+  const dataUrl =
+    `https://raw.githubusercontent.com/` +
+    `leggedrobotics/pace-sim2real/` +
+    `star-history-data/star-history.json?ts=${Date.now()}`;
 
   let chart = null;
 
