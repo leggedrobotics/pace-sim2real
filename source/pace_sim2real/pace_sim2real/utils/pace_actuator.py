@@ -23,8 +23,9 @@ class PaceDCMotor(DCMotor):
     frame by adding a per-joint encoder bias to the true joint positions. In other words,
     the controller operates on biased (encoder) positions rather than the true joint positions.
 
-    The position and velocity targets are applied after a configurable delay
-    (in simulation steps) to represent latency between command calculation and actuation.
+    The position/velocity targets and feed-forward torques are applied after a configurable delay
+    (in simulation steps) to represent latency between command calculation and actuation. The torque
+    produced by the PD controller itself is not delayed.
 
     The software implementation is inspired by DelayedPDActuator.
     """
@@ -43,14 +44,17 @@ class PaceDCMotor(DCMotor):
 
         self.position_targets_delay_buffer = DelayBuffer(cfg.max_delay + 1, self._num_envs, device=self._device)
         self.velocity_targets_delay_buffer = DelayBuffer(cfg.max_delay + 1, self._num_envs, device=self._device)
+        self.feedforward_torques_delay_buffer = DelayBuffer(cfg.max_delay + 1, self._num_envs, device=self._device)
         self.position_targets_delay_buffer.set_time_lag(cfg.max_delay, torch.arange(self._num_envs, device=self._device))
         self.velocity_targets_delay_buffer.set_time_lag(cfg.max_delay, torch.arange(self._num_envs, device=self._device))
+        self.feedforward_torques_delay_buffer.set_time_lag(cfg.max_delay, torch.arange(self._num_envs, device=self._device))
 
     def reset(self, env_ids: Sequence[int]):
         super().reset(env_ids)
         # reset buffers
         self.position_targets_delay_buffer.reset(env_ids)
         self.velocity_targets_delay_buffer.reset(env_ids)
+        self.feedforward_torques_delay_buffer.reset(env_ids)
 
     def update_encoder_bias(self, encoder_bias: torch.Tensor):
         self.encoder_bias = encoder_bias
@@ -60,13 +64,16 @@ class PaceDCMotor(DCMotor):
             env_ids = torch.arange(self._num_envs, device=self._device)
         self.position_targets_delay_buffer.set_time_lag(delay, env_ids)
         self.velocity_targets_delay_buffer.set_time_lag(delay, env_ids)
+        self.feedforward_torques_delay_buffer.set_time_lag(delay, env_ids)
 
     def compute(
         self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
     ) -> ArticulationActions:
-        # delay the position and velocity targets to represent latency between command calculation and actuation
+        # delay the position/velocity targets and feed-forward torques to represent latency between command
+        # calculation and actuation. The torque produced by the PD controller itself is not delayed.
         control_action.joint_positions = self.position_targets_delay_buffer.compute(control_action.joint_positions)
         control_action.joint_velocities = self.velocity_targets_delay_buffer.compute(control_action.joint_velocities)
+        control_action.joint_efforts = self.feedforward_torques_delay_buffer.compute(control_action.joint_efforts)
         # compute actuator model with encoder bias added to joint positions (joint position in encoder frame, not simulation frame)
         control_action_sim = super().compute(control_action, joint_pos - self.encoder_bias, joint_vel)
         return control_action_sim
