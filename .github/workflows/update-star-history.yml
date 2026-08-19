@@ -33,7 +33,7 @@ jobs:
       - name: Generate star-history assets
         working-directory: source
         env:
-          GITHUB_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python scripts/generate_star_history.py \
             --repository "${{ github.repository }}" \
