@@ -1,8 +1,8 @@
 {
   "repository": "leggedrobotics/pace-sim2real",
-  "as_of": "2026-08-19",
-  "total_stars": 677,
-  "latest_starred_at": "2026-08-19T14:10:13Z",
+  "as_of": "2026-08-24",
+  "total_stars": 684,
+  "latest_starred_at": "2026-08-22T19:02:34Z",
   "stars": [
     {
       "date": "2025-09-07",
@@ -878,11 +878,27 @@
     },
     {
       "date": "2026-08-18",
-      "count": 672
+      "count": 671
     },
     {
       "date": "2026-08-19",
-      "count": 677
+      "count": 676
+    },
+    {
+      "date": "2026-08-20",
+      "count": 679
+    },
+    {
+      "date": "2026-08-21",
+      "count": 682
+    },
+    {
+      "date": "2026-08-22",
+      "count": 684
+    },
+    {
+      "date": "2026-08-24",
+      "count": 684
     }
   ]
 }
