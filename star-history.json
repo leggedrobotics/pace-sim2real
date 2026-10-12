@@ -1,8 +1,8 @@
 {
   "repository": "leggedrobotics/pace-sim2real",
-  "as_of": "2026-10-05",
-  "total_stars": 775,
-  "latest_starred_at": "2026-10-05T00:58:59Z",
+  "as_of": "2026-10-12",
+  "total_stars": 788,
+  "latest_starred_at": "2026-10-12T03:34:57Z",
   "stars": [
     {
       "date": "2025-09-07",
@@ -830,191 +830,215 @@
     },
     {
       "date": "2026-08-05",
-      "count": 638
+      "count": 637
     },
     {
       "date": "2026-08-06",
-      "count": 641
+      "count": 640
     },
     {
       "date": "2026-08-07",
-      "count": 644
+      "count": 643
     },
     {
       "date": "2026-08-08",
-      "count": 646
+      "count": 645
     },
     {
       "date": "2026-08-09",
-      "count": 648
+      "count": 647
     },
     {
       "date": "2026-08-10",
-      "count": 652
+      "count": 651
     },
     {
       "date": "2026-08-11",
-      "count": 653
+      "count": 652
     },
     {
       "date": "2026-08-14",
-      "count": 657
+      "count": 656
     },
     {
       "date": "2026-08-15",
-      "count": 660
+      "count": 659
     },
     {
       "date": "2026-08-16",
-      "count": 662
+      "count": 661
     },
     {
       "date": "2026-08-17",
-      "count": 666
+      "count": 665
     },
     {
       "date": "2026-08-18",
-      "count": 667
+      "count": 666
     },
     {
       "date": "2026-08-19",
-      "count": 672
+      "count": 671
     },
     {
       "date": "2026-08-20",
-      "count": 675
+      "count": 674
     },
     {
       "date": "2026-08-21",
-      "count": 678
+      "count": 677
     },
     {
       "date": "2026-08-22",
-      "count": 680
+      "count": 679
     },
     {
       "date": "2026-08-24",
-      "count": 681
+      "count": 680
     },
     {
       "date": "2026-08-25",
-      "count": 682
+      "count": 681
     },
     {
       "date": "2026-08-26",
-      "count": 683
+      "count": 682
     },
     {
       "date": "2026-08-27",
-      "count": 684
+      "count": 683
     },
     {
       "date": "2026-08-28",
-      "count": 685
+      "count": 684
     },
     {
       "date": "2026-08-30",
-      "count": 687
+      "count": 686
     },
     {
       "date": "2026-08-31",
-      "count": 688
+      "count": 687
     },
     {
       "date": "2026-09-03",
-      "count": 689
+      "count": 688
     },
     {
       "date": "2026-09-04",
-      "count": 690
+      "count": 689
     },
     {
       "date": "2026-09-06",
-      "count": 711
+      "count": 710
     },
     {
       "date": "2026-09-07",
-      "count": 728
+      "count": 727
     },
     {
       "date": "2026-09-08",
-      "count": 732
+      "count": 731
     },
     {
       "date": "2026-09-09",
-      "count": 735
+      "count": 734
     },
     {
       "date": "2026-09-10",
-      "count": 737
+      "count": 736
     },
     {
       "date": "2026-09-11",
-      "count": 740
+      "count": 739
     },
     {
       "date": "2026-09-14",
-      "count": 745
+      "count": 744
     },
     {
       "date": "2026-09-15",
-      "count": 746
+      "count": 745
     },
     {
       "date": "2026-09-16",
-      "count": 749
+      "count": 748
     },
     {
       "date": "2026-09-17",
-      "count": 753
+      "count": 752
     },
     {
       "date": "2026-09-18",
-      "count": 757
+      "count": 756
     },
     {
       "date": "2026-09-20",
-      "count": 758
+      "count": 757
     },
     {
       "date": "2026-09-21",
-      "count": 760
+      "count": 759
     },
     {
       "date": "2026-09-22",
-      "count": 763
+      "count": 762
     },
     {
       "date": "2026-09-23",
-      "count": 764
+      "count": 763
     },
     {
       "date": "2026-09-24",
-      "count": 767
+      "count": 766
     },
     {
       "date": "2026-09-25",
-      "count": 768
+      "count": 767
     },
     {
       "date": "2026-09-28",
-      "count": 769
+      "count": 768
     },
     {
       "date": "2026-09-29",
-      "count": 771
+      "count": 770
     },
     {
       "date": "2026-10-01",
-      "count": 772
+      "count": 771
     },
     {
       "date": "2026-10-04",
-      "count": 773
+      "count": 772
     },
     {
       "date": "2026-10-05",
-      "count": 775
+      "count": 777
+    },
+    {
+      "date": "2026-10-07",
+      "count": 779
+    },
+    {
+      "date": "2026-10-08",
+      "count": 782
+    },
+    {
+      "date": "2026-10-09",
+      "count": 783
+    },
+    {
+      "date": "2026-10-10",
+      "count": 786
+    },
+    {
+      "date": "2026-10-11",
+      "count": 787
+    },
+    {
+      "date": "2026-10-12",
+      "count": 788
     }
   ]
 }
