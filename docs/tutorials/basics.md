@@ -149,6 +149,9 @@ Key parameters include:
     * `"command"`: the position/velocity targets and feed-forward torques reach the drive late, while the PD controller runs on the current measurements. This matches drives with their own low-level control loop and stays stable for large delays.
     * `"effort"`: the torque computed from the current measurements is applied late, i.e. the feedback itself is delayed. This was the behavior before v0.2.0 and can be used to reproduce earlier results.
 
+!!! note "Delay implementation before v0.2.0"
+    The paper describes a delay of the commands, but versions before v0.2.0 delayed the computed torque. The results in the paper were obtained with this previous implementation, which corresponds to `delay_mode = "effort"`. Use it to reproduce the paper or earlier identification results.
+
 If your robot uses a specialized actuator model, you can extend `PaceDCMotorCfg` by inheriting from your custom class and augmenting it with delay and encoder bias functionality.
 
 ---
