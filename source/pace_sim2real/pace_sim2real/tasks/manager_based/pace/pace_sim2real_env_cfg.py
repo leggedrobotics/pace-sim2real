@@ -113,6 +113,29 @@ class PaceCfg:
     joint_order: list = MISSING
     bounds_params: torch.Tensor = MISSING
 
+    separate_dynamic_friction: bool = False
+    """Identify static and dynamic friction separately. Defaults to False (static = dynamic / coulomb friction).
+
+    The friction parameter is then the static friction, and n ratios r in :attr:`friction_ratio_bounds` are appended
+    after all other parameters, with dynamic friction = r * static friction. This keeps dynamic <= static friction for
+    every sample.
+    """
+    friction_ratio_bounds: tuple[float, float] = (0.0, 1.0)
+    """Lower and upper bound of the ratio between dynamic and static friction."""
+
+    def apply_friction_ratio(self):
+        """Extend the parameter bounds by the dynamic to static friction ratios."""
+        if not self.separate_dynamic_friction:
+            return
+        num_joints = len(self.joint_order)
+        num_params = self.bounds_params.shape[0]
+        num_before = 4 * num_joints + 1
+        if num_params == num_before:
+            ratio_bounds = torch.tensor(self.friction_ratio_bounds, dtype=self.bounds_params.dtype).repeat(num_joints, 1)
+            self.bounds_params = torch.cat([self.bounds_params, ratio_bounds], dim=0)
+        elif num_params != num_before + num_joints:
+            raise ValueError(f"Expected {num_before} or {num_before + num_joints} bounds with separate dynamic friction, got {num_params}.")
+
 ##
 # Environment configuration
 ##
@@ -145,3 +168,4 @@ class PaceSim2realEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.render_interval = 4  # render at 100Hz
 
         self.scene.robot.spawn.articulation_props.fix_root_link = True
+        self.sim2real.apply_friction_ratio()

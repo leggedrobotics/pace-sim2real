@@ -33,6 +33,7 @@ class AnymalDPaceCfg(PaceCfg):
     robot_name: str = "anymal_d_sim"
     data_dir: str = "anymal_d_sim/chirp_data.pt"  # located in pace_sim2real/data/anymal_d_sim/chirp_data.pt
     bounds_params: torch.Tensor = torch.zeros((49, 2))  # 12 + 12 + 12 + 12 + 1 = 49 parameters to optimize
+    separate_dynamic_friction: bool = True  # appends 12 dynamic/static friction ratios -> 61 parameters
     joint_order: list[str] = [
         "LF_HAA",
         "LF_HFE",

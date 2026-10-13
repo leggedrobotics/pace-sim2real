@@ -12,7 +12,7 @@ import os
 
 
 class CMAESOptimizer:
-    def __init__(self, bounds, population_size, log_dir, joint_order, max_iteration, data, device, epsilon=None, sigma=0.5, save_interval=10, save_optimization_process=False):
+    def __init__(self, bounds, population_size, log_dir, joint_order, max_iteration, data, device, epsilon=None, sigma=0.5, save_interval=10, save_optimization_process=False, separate_dynamic_friction=False):
 
         self.joint_order = joint_order
         self.max_iteration = max_iteration
@@ -20,6 +20,7 @@ class CMAESOptimizer:
         self.save_interval = save_interval
         self.device = device
         self.save_optimization_process = save_optimization_process
+        self.separate_dynamic_friction = separate_dynamic_friction
         self._timer_start = datetime.now()  # timer for logging purposes
 
         # create log_dir in YY_MM_DD_hh-mm-ss format
@@ -32,7 +33,8 @@ class CMAESOptimizer:
                     "joint_order": joint_order,
                     "dof_pos": data["dof_pos"],
                     "des_dof_pos": data["des_dof_pos"],
-                    "time": data["time"]
+                    "time": data["time"],
+                    "separate_dynamic_friction": separate_dynamic_friction,
                     }, log_dir + "/config.pt")
 
         self.bounds = bounds
@@ -61,6 +63,12 @@ class CMAESOptimizer:
         self.friction_idx = slice(2 * num_joints, 3 * num_joints)
         self.bias_idx = slice(3 * num_joints, 4 * num_joints)
         self.delay_idx = 4 * num_joints
+        # dynamic to static friction ratios come after all other parameters
+        self.friction_ratio_idx = slice(4 * num_joints + 1, 5 * num_joints + 1)
+        expected_num_params = 4 * num_joints + 1 + (num_joints if separate_dynamic_friction else 0)
+        if bounds.shape[0] != expected_num_params:
+            raise ValueError(f"Expected {expected_num_params} parameter bounds (separate_dynamic_friction="
+                             f"{separate_dynamic_friction}), got {bounds.shape[0]}.")
 
         self._reset_population()
         print("CMA-ES optimizer initialized.")
@@ -118,8 +126,8 @@ class CMAESOptimizer:
         articulation.write_joint_dynamic_friction_coefficient_to_sim(0.0, joint_ids=joint_ids, env_ids=env_ids)
         articulation.write_joint_friction_coefficient_to_sim(self.sim_params[:, self.friction_idx], joint_ids=joint_ids, env_ids=env_ids)
         articulation.data.default_joint_friction_coeff[:, joint_ids] = self.sim_params[:, self.friction_idx]
-        articulation.write_joint_dynamic_friction_coefficient_to_sim(self.sim_params[:, self.friction_idx], joint_ids=joint_ids, env_ids=env_ids)
-        articulation.data.default_joint_dynamic_friction_coeff[:, joint_ids] = self.sim_params[:, self.friction_idx]
+        articulation.write_joint_dynamic_friction_coefficient_to_sim(self.dynamic_friction(), joint_ids=joint_ids, env_ids=env_ids)
+        articulation.data.default_joint_dynamic_friction_coeff[:, joint_ids] = self.dynamic_friction()
         articulation.write_joint_position_to_sim(initial_position + self.sim_params[:, self.bias_idx], joint_ids=joint_ids)
         articulation.write_joint_velocity_to_sim(torch.zeros_like(initial_position), joint_ids=joint_ids)
         for drive_type in articulation.actuators.keys():
@@ -133,6 +141,12 @@ class CMAESOptimizer:
             articulation.actuators[drive_type].update_time_lags(self.sim_params[:, self.delay_idx].to(torch.int))
             articulation.actuators[drive_type].reset(env_ids)
 
+    def dynamic_friction(self):
+        """Dynamic Coulomb friction per env and joint, equal to the static friction unless identified separately."""
+        if self.separate_dynamic_friction:
+            return self.sim_params[:, self.friction_idx] * self.sim_params[:, self.friction_ratio_idx]
+        return self.sim_params[:, self.friction_idx]
+
     def _print_iteration(self):
         min_score = torch.min(self.scores)
         max_score = torch.max(self.scores)
@@ -141,7 +155,11 @@ class CMAESOptimizer:
         print("Min score: ", min_score.item(), " at index: ", min_index.item())
         print("Armature: ", self.sim_params[min_index, self.armature_idx].tolist())
         print("Viscous Friction: ", self.sim_params[min_index, self.damping_idx].tolist())
-        print("Static/Dynamic Friction: ", self.sim_params[min_index, self.friction_idx].tolist())
+        if self.separate_dynamic_friction:
+            print("Static Friction: ", self.sim_params[min_index, self.friction_idx].tolist())
+            print("Dynamic Friction: ", self.dynamic_friction()[min_index].tolist())
+        else:
+            print("Static/Dynamic Friction: ", self.sim_params[min_index, self.friction_idx].tolist())
         print("Bias: ", self.sim_params[min_index, self.bias_idx].tolist())
         print("Delay: ", self.sim_params[min_index, self.delay_idx].tolist())
         print(f"Elapsed time: {(datetime.now() - self._timer_start).total_seconds():.1f} seconds")
@@ -170,6 +188,10 @@ class CMAESOptimizer:
             self.writer.add_scalar("3_Static_Dynamic_Friction/best_" + self.joint_order[i], self.sim_params[min_score_index, self.friction_idx][i].item(), self.iteration_counter)
             self.writer.add_scalar("2_Viscous_Friction/best_" + self.joint_order[i], self.sim_params[min_score_index, self.damping_idx][i].item(), self.iteration_counter)
             self.writer.add_scalar("1_Armature/best_" + self.joint_order[i], self.sim_params[min_score_index, self.armature_idx][i].item(), self.iteration_counter)
+            if self.separate_dynamic_friction:
+                self.writer.add_histogram("6_Dynamic_Friction_Ratio/distribution_" + self.joint_order[i], self.sim_params[:, self.friction_ratio_idx][:, i], self.iteration_counter)
+                self.writer.add_scalar("6_Dynamic_Friction_Ratio/best_" + self.joint_order[i], self.sim_params[min_score_index, self.friction_ratio_idx][i].item(), self.iteration_counter)
+                self.writer.add_scalar("6_Dynamic_Friction/best_" + self.joint_order[i], self.dynamic_friction()[min_score_index, i].item(), self.iteration_counter)
         self.writer.add_histogram("0_Delay/distribution", self.sim_params[:, self.delay_idx], self.iteration_counter)
         self.writer.add_scalar("0_Delay/best", self.sim_params[min_score_index, self.delay_idx].item(), self.iteration_counter)
 

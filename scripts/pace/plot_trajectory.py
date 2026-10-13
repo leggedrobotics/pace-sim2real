@@ -85,7 +85,11 @@ print(f"Armature params: {mean[:len(joint_order)]}")
 print(f"Viscous friction params: {mean[len(joint_order):2 * len(joint_order)]}")
 print(f"Static/dynamic friction params: {mean[2 * len(joint_order):3 * len(joint_order)]}")
 print(f"Encoder bias params: {mean[3 * len(joint_order):4 * len(joint_order)]}")
-print(f"Delay param: {mean[-1].item()}")
+print(f"Delay param: {mean[4 * len(joint_order)].item()}")
+if config.get("separate_dynamic_friction", False):
+    friction_ratio = mean[4 * len(joint_order) + 1:5 * len(joint_order) + 1]
+    print(f"Dynamic/static friction ratio params: {friction_ratio}")
+    print(f"Dynamic friction: {mean[2 * len(joint_order):3 * len(joint_order)] * friction_ratio}")
 encoder_bias = mean[3 * len(joint_order):4 * len(joint_order)]  # extract encoder bias
 
 if plot_score:

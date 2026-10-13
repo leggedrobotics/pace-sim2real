@@ -232,6 +232,7 @@ The following section temporarily injects example parameters for testing and can
 armature = torch.tensor([0.1] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)
 damping = torch.tensor([4.5] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)
 friction = torch.tensor([0.05] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)
+dynamic_friction = 0.5 * friction
 bias = torch.tensor([0.05] * 12, device=env.unwrapped.device).unsqueeze(0)
 time_lag = torch.tensor([[5]], dtype=torch.int, device=env.unwrapped.device)
 ```

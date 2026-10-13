@@ -59,7 +59,8 @@ def main():
 
     armature = torch.tensor([0.1] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)
     damping = torch.tensor([4.5] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)
-    friction = torch.tensor([0.05] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)  # coulomb friction
+    friction = torch.tensor([0.05] * len(joint_ids), device=env.unwrapped.device).unsqueeze(0)  # static friction
+    dynamic_friction = 0.5 * friction  # dynamic friction (must not exceed static friction)
     bias = torch.tensor([0.05] * 12, device=env.unwrapped.device).unsqueeze(0)
     time_lag = torch.tensor([[5]], dtype=torch.int, device=env.unwrapped.device)
     env.reset()
@@ -68,11 +69,11 @@ def main():
     articulation.data.default_joint_armature[:, joint_ids] = armature
     articulation.write_joint_viscous_friction_coefficient_to_sim(damping, joint_ids=joint_ids, env_ids=torch.arange(len(damping)))
     articulation.data.default_joint_viscous_friction_coeff[:, joint_ids] = damping
-    # note: modeling coulomb friction if joint_friction = joint_dynamic_friction
+    # note: modeling pure coulomb friction if joint_friction = joint_dynamic_friction
     articulation.write_joint_friction_coefficient_to_sim(friction, joint_ids=joint_ids, env_ids=torch.tensor([0]))
     articulation.data.default_joint_friction_coeff[:, joint_ids] = friction
-    articulation.write_joint_dynamic_friction_coefficient_to_sim(friction, joint_ids=joint_ids, env_ids=torch.tensor([0]))
-    articulation.data.default_joint_dynamic_friction_coeff[:, joint_ids] = friction
+    articulation.write_joint_dynamic_friction_coefficient_to_sim(dynamic_friction, joint_ids=joint_ids, env_ids=torch.tensor([0]))
+    articulation.data.default_joint_dynamic_friction_coeff[:, joint_ids] = dynamic_friction
     drive_types = articulation.actuators.keys()
     for drive_type in drive_types:
         drive_indices = articulation.actuators[drive_type].joint_indices
