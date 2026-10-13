@@ -1130,15 +1130,18 @@
 <h3 id="isaac-sim-compatibility-notes">Isaac Sim compatibility notes<a class="headerlink" href="#isaac-sim-compatibility-notes" title="Permanent link">&para;</a></h3>
 <p>PACE is designed around the physics capabilities introduced in <strong>Isaac Sim 5.0</strong>, including:
 - Joint viscous friction modeling
+- Separate static and dynamic joint friction
 - Improved articulation parameter handling
 - More consistent actuator behavior</p>
 <p>When running PACE on Isaac Sim versions <strong>&lt; 5.0</strong>, you may see warnings such as:</p>
 <div class="highlight"><pre><span></span><code>Setting<span class="w"> </span>joint<span class="w"> </span>viscous<span class="w"> </span>friction<span class="w"> </span>coefficients<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>supported<span class="w"> </span><span class="k">in</span><span class="w"> </span>Isaac<span class="w"> </span>Sim<span class="w"> </span>&lt;<span class="w"> </span><span class="m">5</span>.0
+Setting<span class="w"> </span>joint<span class="w"> </span>dynamic<span class="w"> </span>friction<span class="w"> </span>coefficients<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>supported<span class="w"> </span><span class="k">in</span><span class="w"> </span>Isaac<span class="w"> </span>Sim<span class="w"> </span>&lt;<span class="w"> </span><span class="m">5</span>.0
 </code></pre></div>
 <p>This means the simulator silently ignores these parameters. As a result:
 - The simulation will run, but
 - The actuator dynamics will not match the intended PACE model
-- Sim-to-real performance may degrade</p>
+- Sim-to-real performance may degrade
+- With <code>separate_dynamic_friction = True</code>, the friction ratios have no effect and cannot be identified</p>
 <p>For accurate system identification and controller transfer, we strongly recommend using:</p>
 <blockquote>
 <p>Isaac Sim 5.0 + Isaac Lab (current stable)</p>

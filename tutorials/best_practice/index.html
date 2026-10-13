@@ -1461,7 +1461,7 @@ GPU memory ∝ population_size × time_steps × joints
 </blockquote>
 <hr />
 <h2 id="4-understand-delay-optimization-limitations">4. Understand Delay Optimization Limitations<a class="headerlink" href="#4-understand-delay-optimization-limitations" title="Permanent link">&para;</a></h2>
-<p>In PACE, delay is internally discretized to an integer value.</p>
+<p>In PACE, delay is internally discretized to an integer value. By default, it delays the commanded targets (<code>delay_mode = "command"</code>); set <code>delay_mode = "effort"</code> to delay the computed torque instead, as in versions before v0.2.0. Keep the same mode for identification and deployment.</p>
 <p>Consequences:</p>
 <ul>
 <li>Optimization landscape is discontinuous</li>

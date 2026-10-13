@@ -1415,13 +1415,14 @@
 <ul>
 <li>Joint armature</li>
 <li>Viscous damping</li>
-<li>Coulomb friction</li>
+<li>Coulomb friction (optionally split into static and dynamic friction)</li>
 <li>Encoder bias</li>
-<li>Encoder delay</li>
+<li>Actuator delay</li>
 </ul>
 <p>The parameter vector is structured as:</p>
-<div class="highlight"><pre><span></span><code>[ armature | damping | friction | bias | delay ]
+<div class="highlight"><pre><span></span><code>[ armature | damping | friction | bias | delay | friction ratio (optional) ]
 </code></pre></div>
+<p>The friction ratios are only present with <code>separate_dynamic_friction = True</code>.</p>
 <h3 id="adding-new-parameters">Adding new parameters<a class="headerlink" href="#adding-new-parameters" title="Permanent link">&para;</a></h3>
 <p>For example, to add torque saturation:</p>
 <ol>
@@ -1431,7 +1432,9 @@
 <li>Apply to simulator in <code>update_simulator()</code></li>
 </ol>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="n">torque_limit_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">num_joints</span><span class="p">,</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">num_joints</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># append after all existing parameters (including the optional friction ratios)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">num_joints</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">num_joints</span> <span class="k">if</span> <span class="n">separate_dynamic_friction</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">torque_limit_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="n">num_joints</span><span class="p">)</span>
 </code></pre></div>
 <p>Then write into the simulator accordingly.</p>
 <hr />

@@ -1194,7 +1194,12 @@
     <span class="n">velocity_limit</span><span class="o">=</span><span class="mf">8.5</span><span class="p">,</span>
     <span class="n">stiffness</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">85.0</span><span class="p">},</span>  <span class="c1"># P gain in Nm/rad</span>
     <span class="n">damping</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">},</span>  <span class="c1"># D gain in Nm s/rad</span>
-    <span class="n">encoder_bias</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span><span class="p">,</span>  <span class="c1"># encoder bias in radians</span>
+    <span class="n">encoder_bias</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>  <span class="c1"># encoder bias in radians</span>
+    <span class="c1"># note: modeling coulomb friction if friction = dynamic_friction</span>
+    <span class="c1"># &gt; in newer Isaac Sim versions, friction is renamed to static_friction</span>
+    <span class="n">friction</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>  <span class="c1"># static friction coefficient (Nm)</span>
+    <span class="n">dynamic_friction</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>  <span class="c1"># dynamic friction coefficient (Nm)</span>
+    <span class="n">viscous_friction</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>  <span class="c1"># viscous friction coefficient (Nm s/rad)</span>
     <span class="n">max_delay</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># max delay in simulation steps</span>
 <span class="p">)</span>
 
@@ -1205,6 +1210,7 @@
     <span class="n">robot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"anymal_d_sim"</span>
     <span class="n">data_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"anymal_d_sim/chirp_data.pt"</span>  <span class="c1"># located in pace_sim2real/data/anymal_d_sim/chirp_data.pt</span>
     <span class="n">bounds_params</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">49</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># 12 + 12 + 12 + 12 + 1 = 49 parameters to optimize</span>
+    <span class="n">separate_dynamic_friction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># appends 12 dynamic/static friction ratios -&gt; 61 parameters</span>
     <span class="n">joint_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">"LF_HAA"</span><span class="p">,</span>
         <span class="s2">"LF_HFE"</span><span class="p">,</span>
@@ -1268,7 +1274,7 @@
     <span class="n">velocity_limit</span><span class="o">=</span><span class="mf">8.5</span><span class="p">,</span>
     <span class="n">stiffness</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">85.0</span><span class="p">},</span>
     <span class="n">damping</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">},</span>
-    <span class="n">encoder_bias</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="n">encoder_bias</span><span class="o">=</span><span class="p">{</span><span class="s2">".*"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
     <span class="n">max_delay</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -1281,7 +1287,16 @@
 <li><code>stiffness</code> and <code>damping</code>: internal PD gains used by the real actuator</li>
 <li><code>encoder_bias</code>: initial bias estimate (set to zero initially)</li>
 <li><code>max_delay</code>: maximum expected actuator delay in simulation steps</li>
+<li><code>delay_mode</code>: where the delay acts (defaults to <code>"command"</code>)<ul>
+<li><code>"command"</code>: the position/velocity targets and feed-forward torques reach the drive late, while the PD controller runs on the current measurements. This matches drives with their own low-level control loop and stays stable for large delays.</li>
+<li><code>"effort"</code>: the torque computed from the current measurements is applied late, i.e. the feedback itself is delayed. This was the behavior before v0.2.0 and can be used to reproduce earlier results.</li>
 </ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Delay implementation before v0.2.0</p>
+<p>The paper describes a delay of the commands, but versions before v0.2.0 delayed the computed torque. The results in the paper were obtained with this previous implementation, which corresponds to <code>delay_mode = "effort"</code>. Use it to reproduce the paper or earlier identification results.</p>
+</div>
 <p>If your robot uses a specialized actuator model, you can extend <code>PaceDCMotorCfg</code> by inheriting from your custom class and augmenting it with delay and encoder bias functionality.</p>
 <hr />
 <h2 id="defining-pace-specific-configs">Defining PACE specific configs<a class="headerlink" href="#defining-pace-specific-configs" title="Permanent link">&para;</a></h2>
@@ -1295,6 +1310,8 @@
 <li><code>data_dir</code>: path to recorded trajectory data</li>
 <li><code>joint_order</code>: alignment with real data</li>
 <li><code>bounds_params</code>: optimization limits</li>
+<li><code>separate_dynamic_friction</code>: identify static and dynamic friction separately (defaults to <code>False</code>, i.e. Coulomb friction with static = dynamic)</li>
+<li><code>friction_ratio_bounds</code>: bounds of the dynamic to static friction ratio (defaults to <code>(0.0, 1.0)</code>)</li>
 </ul>
 <p>Optional CMA-ES settings (iterations, sigma, epsilon, logging frequency) can also be configured here.</p>
 <p>IsaacLab determines joint ordering via breadth-first traversal, which may differ from the ordering used in your real robot’s control stack or logged data. To ensure correct alignment between simulated and real trajectories, explicitly define the joint order used on your physical system here.</p>
@@ -1305,8 +1322,10 @@
 <li>Viscous friction: <code>[n_joints : 2*n_joints]</code></li>
 <li>Static friction: <code>[2*n_joints : 3*n_joints]</code></li>
 <li>Encoder bias: <code>[3*n_joints : 4*n_joints]</code></li>
-<li>Global delay: <code>[-1]</code></li>
+<li>Global delay: <code>[4*n_joints]</code></li>
+<li>Dynamic to static friction ratio: <code>[4*n_joints + 1 : 5*n_joints + 1]</code> (only with <code>separate_dynamic_friction = True</code>)</li>
 </ul>
+<p>You only define the bounds of the first <code>4*n_joints + 1</code> parameters. If <code>separate_dynamic_friction</code> is enabled, the ratio bounds are appended automatically from <code>friction_ratio_bounds</code>. The dynamic friction is then <code>ratio * static friction</code>, so it never exceeds the static friction.</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># set bounds for parameters</span>
         <span class="o">...</span>
@@ -1343,6 +1362,7 @@
 <div class="highlight"><pre><span></span><code><span class="n">armature</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">joint_ids</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">damping</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">4.5</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">joint_ids</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">friction</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.05</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">joint_ids</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">dynamic_friction</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">friction</span>
 <span class="n">bias</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.05</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">time_lag</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">5</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 </code></pre></div>
@@ -1431,6 +1451,7 @@ python<span class="w"> </span>scripts/pace/fit.py<span class="w"> </span>--headl
 <ul>
 <li><code>max_delay</code></li>
 <li><code>encoder_bias</code></li>
+<li><code>delay_mode</code> (must match the mode used during identification)</li>
 </ul>
 <p>using the values obtained from the parameter identification step.</p>
 </li>
@@ -1440,6 +1461,7 @@ python<span class="w"> </span>scripts/pace/fit.py<span class="w"> </span>--headl
 <li><code>joint_armature</code></li>
 <li><code>joint_viscous_friction</code></li>
 <li><code>joint_friction</code></li>
+<li><code>joint_dynamic_friction</code> (equal to <code>joint_friction</code>, or static friction × identified ratio with <code>separate_dynamic_friction = True</code>)</li>
 </ul>
 </li>
 </ol>

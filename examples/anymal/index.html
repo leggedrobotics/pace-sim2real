@@ -1224,7 +1224,7 @@
 <ul>
 <li>Joint armature</li>
 <li>Viscous damping</li>
-<li>Static friction</li>
+<li>Static and dynamic friction (dynamic = 0.5 × static)</li>
 <li>Joint bias</li>
 <li>Actuator delay</li>
 </ul>
@@ -1246,17 +1246,23 @@ python<span class="w"> </span>scripts/pace/data_collection.py
 <ul>
 <li>Number of environments: <strong>4096</strong></li>
 <li>
-<p>Total identified parameters: <strong>49</strong></p>
+<p>Total identified parameters: <strong>61</strong></p>
 <ul>
 <li>12 joint armature values</li>
 <li>12 viscous friction values</li>
 <li>12 static friction values</li>
 <li>12 joint bias values</li>
 <li>1 global delay</li>
+<li>12 dynamic/static friction ratios (<code>separate_dynamic_friction=True</code>)</li>
 </ul>
 </li>
 </ul>
 <p>In this example, the optimizer re-estimates the parameters used in the simulation data collection stage, serving as a proof-of-correctness. In real deployments, this step is used to identify parameters of custom hardware platforms.</p>
+<div class="admonition note">
+<p class="admonition-title">Static and dynamic friction</p>
+<p>This example identifies static and dynamic friction separately, which adds 12 parameters compared to the original paper (61 instead of 49). The friction parameter is then the static (break-away) friction, and the dynamic friction is identified as a ratio of it in <code>[0, 1]</code>, so dynamic friction never exceeds static friction.</p>
+<p>Setting <code>separate_dynamic_friction = False</code> in <code>AnymalDPaceCfg</code> falls back to standard Coulomb friction (static = dynamic) with 49 parameters, as in the paper. Use the split if break-away friction is significant on your system, or if you do not mind the additional parameters and complexity.</p>
+</div>
 <h3 id="execution_1">Execution<a class="headerlink" href="#execution_1" title="Permanent link">&para;</a></h3>
 <p>Inside the virtual environment, run:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/pace-sim2real
@@ -1267,6 +1273,10 @@ python<span class="w"> </span>scripts/pace/fit.py<span class="w"> </span>--headl
 </code></pre></div>
 <p><img alt="ANYmal parameter identification" src="../../assets/anymal_fit_web.webp" /></p>
 <h3 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The numbers and the score plot below were obtained with PACE v0.1.x (49 parameters, torque delay). Runtime and convergence may differ with the default v0.2.0 setup (61 parameters, command delay).</p>
+</div>
 <ul>
 <li>Convergence: up to numerical precision (<strong>~1e-12</strong>)</li>
 <li>Runtime: approximately <strong>2:15 hours</strong> on an NVIDIA RTX 3080</li>
@@ -1309,7 +1319,7 @@ python<span class="w"> </span>scripts/pace/plot_trajectory.py<span class="w"> </
 <li>
 <p>During initialization, set:</p>
 <ul>
-<li>Joint delay</li>
+<li>Joint delay (<code>max_delay</code>) and <code>delay_mode</code> (the default <code>"command"</code> is used in this example)</li>
 <li>Joint bias</li>
 </ul>
 <p>using the values obtained from the parameter identification step.</p>
@@ -1320,6 +1330,7 @@ python<span class="w"> </span>scripts/pace/plot_trajectory.py<span class="w"> </
 <li><code>joint_armature</code></li>
 <li><code>joint_viscous_friction</code></li>
 <li><code>joint_friction</code></li>
+<li><code>joint_dynamic_friction</code> (static friction × identified ratio)</li>
 </ul>
 </li>
 </ol>
