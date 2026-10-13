@@ -29,6 +29,7 @@ PACE is **developed and tested** with Isaac Sim 5.0, Isaac Lab 0.46.2 and Python
 
 PACE is designed around the physics capabilities introduced in **Isaac Sim 5.0**, including:
 - Joint viscous friction modeling
+- Separate static and dynamic joint friction
 - Improved articulation parameter handling
 - More consistent actuator behavior
 
@@ -36,12 +37,14 @@ When running PACE on Isaac Sim versions **< 5.0**, you may see warnings such as:
 
 ```bash
 Setting joint viscous friction coefficients are not supported in Isaac Sim < 5.0
+Setting joint dynamic friction coefficients are not supported in Isaac Sim < 5.0
 ```
 
 This means the simulator silently ignores these parameters. As a result:
 - The simulation will run, but
 - The actuator dynamics will not match the intended PACE model
 - Sim-to-real performance may degrade
+- With `separate_dynamic_friction = True`, the friction ratios have no effect and cannot be identified
 
 For accurate system identification and controller transfer, we strongly recommend using:
 > Isaac Sim 5.0 + Isaac Lab (current stable)

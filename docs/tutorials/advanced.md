@@ -112,15 +112,17 @@ By default, the optimizer tunes:
 
 * Joint armature
 * Viscous damping
-* Coulomb friction
+* Coulomb friction (optionally split into static and dynamic friction)
 * Encoder bias
-* Encoder delay
+* Actuator delay
 
 The parameter vector is structured as:
 
 ```
-[ armature | damping | friction | bias | delay ]
+[ armature | damping | friction | bias | delay | friction ratio (optional) ]
 ```
+
+The friction ratios are only present with `separate_dynamic_friction = True`.
 
 ### Adding new parameters
 
@@ -134,7 +136,9 @@ For example, to add torque saturation:
 Example:
 
 ```python
-torque_limit_idx = slice(5 * num_joints, 6 * num_joints)
+# append after all existing parameters (including the optional friction ratios)
+start = 4 * num_joints + 1 + (num_joints if separate_dynamic_friction else 0)
+torque_limit_idx = slice(start, start + num_joints)
 ```
 
 Then write into the simulator accordingly.

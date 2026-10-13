@@ -45,7 +45,12 @@ ANYDRIVE_PACE_ACTUATOR_CFG = PaceDCMotorCfg(
     velocity_limit=8.5,
     stiffness={".*": 85.0},  # P gain in Nm/rad
     damping={".*": 0.6},  # D gain in Nm s/rad
-    encoder_bias=[0.0] * 12,  # encoder bias in radians
+    encoder_bias={".*": 0.0},  # encoder bias in radians
+    # note: modeling coulomb friction if friction = dynamic_friction
+    # > in newer Isaac Sim versions, friction is renamed to static_friction
+    friction={".*": 0.0},  # static friction coefficient (Nm)
+    dynamic_friction={".*": 0.0},  # dynamic friction coefficient (Nm)
+    viscous_friction={".*": 0.0},  # viscous friction coefficient (Nm s/rad)
     max_delay=10,  # max delay in simulation steps
 )
 
@@ -56,6 +61,7 @@ class AnymalDPaceCfg(PaceCfg):
     robot_name: str = "anymal_d_sim"
     data_dir: str = "anymal_d_sim/chirp_data.pt"  # located in pace_sim2real/data/anymal_d_sim/chirp_data.pt
     bounds_params: torch.Tensor = torch.zeros((49, 2))  # 12 + 12 + 12 + 12 + 1 = 49 parameters to optimize
+    separate_dynamic_friction: bool = True  # appends 12 dynamic/static friction ratios -> 61 parameters
     joint_order: list[str] = [
         "LF_HAA",
         "LF_HFE",
@@ -124,7 +130,7 @@ ANYDRIVE_PACE_ACTUATOR_CFG = PaceDCMotorCfg(
     velocity_limit=8.5,
     stiffness={".*": 85.0},
     damping={".*": 0.6},
-    encoder_bias=[0.0] * 12,
+    encoder_bias={".*": 0.0},
     max_delay=10,
 )
 ```
@@ -139,6 +145,9 @@ Key parameters include:
 * `stiffness` and `damping`: internal PD gains used by the real actuator
 * `encoder_bias`: initial bias estimate (set to zero initially)
 * `max_delay`: maximum expected actuator delay in simulation steps
+* `delay_mode`: where the delay acts (defaults to `"command"`)
+    * `"command"`: the position/velocity targets and feed-forward torques reach the drive late, while the PD controller runs on the current measurements. This matches drives with their own low-level control loop and stays stable for large delays.
+    * `"effort"`: the torque computed from the current measurements is applied late, i.e. the feedback itself is delayed. This was the behavior before v0.2.0 and can be used to reproduce earlier results.
 
 If your robot uses a specialized actuator model, you can extend `PaceDCMotorCfg` by inheriting from your custom class and augmenting it with delay and encoder bias functionality.
 
@@ -158,6 +167,8 @@ The `AnymalDPaceCfg` block defines algorithmic parameters and data linkage:
 * `data_dir`: path to recorded trajectory data
 * `joint_order`: alignment with real data
 * `bounds_params`: optimization limits
+* `separate_dynamic_friction`: identify static and dynamic friction separately (defaults to `False`, i.e. Coulomb friction with static = dynamic)
+* `friction_ratio_bounds`: bounds of the dynamic to static friction ratio (defaults to `(0.0, 1.0)`)
 
 Optional CMA-ES settings (iterations, sigma, epsilon, logging frequency) can also be configured here.
 
@@ -171,7 +182,10 @@ The parameters are laid out as:
 * Viscous friction: `[n_joints : 2*n_joints]`
 * Static friction: `[2*n_joints : 3*n_joints]`
 * Encoder bias: `[3*n_joints : 4*n_joints]`
-* Global delay: `[-1]`
+* Global delay: `[4*n_joints]`
+* Dynamic to static friction ratio: `[4*n_joints + 1 : 5*n_joints + 1]` (only with `separate_dynamic_friction = True`)
+
+You only define the bounds of the first `4*n_joints + 1` parameters. If `separate_dynamic_friction` is enabled, the ratio bounds are appended automatically from `friction_ratio_bounds`. The dynamic friction is then `ratio * static friction`, so it never exceeds the static friction.
 
 ```python
 def __post_init__(self):
@@ -350,6 +364,7 @@ Use the following procedure:
 
     * `max_delay`
     * `encoder_bias`
+    * `delay_mode` (must match the mode used during identification)
 
     using the values obtained from the parameter identification step.
 
@@ -358,6 +373,7 @@ Use the following procedure:
     * `joint_armature`
     * `joint_viscous_friction`
     * `joint_friction`
+    * `joint_dynamic_friction` (equal to `joint_friction`, or static friction × identified ratio with `separate_dynamic_friction = True`)
 
 ---
 

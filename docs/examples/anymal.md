@@ -90,6 +90,9 @@ pace-sim2real/logs/pace/anymal_d_sim
 
 ### Performance
 
+!!! info
+    The numbers and the score plot below were obtained with PACE v0.1.x (49 parameters, torque delay). Runtime and convergence may differ with the default v0.2.0 setup (61 parameters, command delay).
+
 * Convergence: up to numerical precision (**~1e-12**)
 * Runtime: approximately **2:15 hours** on an NVIDIA RTX 3080
 
@@ -144,7 +147,7 @@ Use the following procedure:
 1. Import `PaceDCMotor` and `PaceDCMotorCfg` into your project.
 2. During initialization, set:
 
-    * Joint delay
+    * Joint delay (`max_delay`) and `delay_mode` (the default `"command"` is used in this example)
     * Joint bias
 
     using the values obtained from the parameter identification step.

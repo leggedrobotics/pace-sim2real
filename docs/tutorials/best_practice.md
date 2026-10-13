@@ -57,7 +57,7 @@ A perfect fit to one trajectory does not guarantee real-world performance.
 
 ## 4. Understand Delay Optimization Limitations
 
-In PACE, delay is internally discretized to an integer value.
+In PACE, delay is internally discretized to an integer value. By default, it delays the commanded targets (`delay_mode = "command"`); set `delay_mode = "effort"` to delay the computed torque instead, as in versions before v0.2.0. Keep the same mode for identification and deployment.
 
 Consequences:
 

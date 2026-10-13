@@ -58,7 +58,7 @@ If you run the examples on older versions (e.g. Isaac Sim 4.5), you may encounte
 Setting joint viscous friction coefficients are not supported in Isaac Sim < 5.0
 ```
 
-These warnings are expected and indicate that certain physics properties (e.g. joint viscous friction) are not supported by the older simulator version. While the examples may still run, the physical fidelity and sim-to-real accuracy will be reduced.
+These warnings are expected and indicate that certain physics properties (e.g. joint viscous and dynamic friction) are not supported by the older simulator version. While the examples may still run, the physical fidelity and sim-to-real accuracy will be reduced.
 
 ✅ Recommended: Isaac Sim 5.0 or newer  
 ⚠️ Legacy support: May run with limitations on < 5.0
