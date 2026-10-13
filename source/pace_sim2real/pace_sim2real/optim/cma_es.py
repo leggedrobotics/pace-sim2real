@@ -69,6 +69,11 @@ class CMAESOptimizer:
         if bounds.shape[0] != expected_num_params:
             raise ValueError(f"Expected {expected_num_params} parameter bounds (separate_dynamic_friction="
                              f"{separate_dynamic_friction}), got {bounds.shape[0]}.")
+        # dynamic friction = ratio * static friction must stay within [0, static friction]
+        if separate_dynamic_friction:
+            ratio_bounds = bounds[self.friction_ratio_idx]
+            if torch.any(ratio_bounds[:, 0] < 0.0) or torch.any(ratio_bounds[:, 1] > 1.0) or torch.any(ratio_bounds[:, 0] > ratio_bounds[:, 1]):
+                raise ValueError(f"Dynamic to static friction ratio bounds must satisfy 0 <= lower <= upper <= 1, got {ratio_bounds.tolist()}.")
 
         self._reset_population()
         print("CMA-ES optimizer initialized.")
