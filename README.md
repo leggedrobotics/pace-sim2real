@@ -1,6 +1,6 @@
 # ⚙️ PACE — Sim-to-Real Transfer for Legged Robots
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue)
-![Python](https://img.shields.io/badge/python-3.10+-green)
+![Python](https://img.shields.io/badge/python-3.11-green)
 ![Status](https://img.shields.io/badge/status-active_development-orange)
 
 PACE is a framework for **sim-to-real transfer of diverse robotic systems**, combining data-driven system identification with evolutionary optimization.
@@ -56,6 +56,7 @@ If you run the examples on older versions (e.g. Isaac Sim 4.5), you may encounte
 
 ```bash
 Setting joint viscous friction coefficients are not supported in Isaac Sim < 5.0
+Setting joint dynamic friction coefficients are not supported in Isaac Sim < 5.0
 ```
 
 These warnings are expected and indicate that certain physics properties (e.g. joint viscous and dynamic friction) are not supported by the older simulator version. While the examples may still run, the physical fidelity and sim-to-real accuracy will be reduced.
@@ -220,8 +221,8 @@ Examples of packages that can often be safely excluded:
 
 ## 🤝 Contributing & Feedback
 
-Internal feedback is highly welcome during this phase.
-Please report issues, unclear steps, or suggestions directly via GitHub issues or internal channels.
+Feedback and contributions are highly welcome.
+Please report issues, unclear steps, or suggestions via GitHub issues, and feel free to open pull requests.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 
@@ -229,22 +230,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 
 ## 📖 How to cite
 
-If you use **PACE Sim2Real** in your research, please cite our [paper](https://arxiv.org/pdf/2509.06342).
-
-The paper has been accepted for publication in **The International Journal of Robotics Research (IJRR)**. The official IJRR citation will be added here once the article is published online.
+If you use **PACE Sim2Real** in your research, please cite our [paper](https://doi.org/10.1177/02783649261459628) published in **The International Journal of Robotics Research (IJRR)**. An open-access version is available on [arXiv](https://arxiv.org/abs/2509.06342).
 
 > F. Bjelonic, F. Tischhauser, and M. Hutter,  
-> _Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots_, arXiv:2509.06342, 2025.
+> _Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots_, The International Journal of Robotics Research, 2026. [doi:10.1177/02783649261459628](https://doi.org/10.1177/02783649261459628)
 
 ```bibtex
 @article{bjelonic2025towards,
-  title         = {Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots},
-  author        = {Bjelonic, Filip and Tischhauser, Fabian and Hutter, Marco},
-  journal       = {arXiv preprint arXiv:2509.06342},
-  year          = {2025},
-  eprint        = {2509.06342},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.RO},
+  title     = {Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots},
+  author    = {Bjelonic, Filip and Tischhauser, Fabian and Hutter, Marco},
+  journal   = {The International Journal of Robotics Research},
+  year      = {2026},
+  doi       = {10.1177/02783649261459628},
+  publisher = {SAGE Publications},
 }
 ```
 

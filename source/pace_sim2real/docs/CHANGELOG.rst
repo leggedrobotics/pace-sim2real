@@ -20,6 +20,7 @@ Changed
 * The ANYmal example identifies static and dynamic friction separately (61 instead of 49 parameters), and the
   synthetic data uses a dynamic friction of half the static friction.
 * Split the license file into license and copyright notice.
+* Updated the citation to the published IJRR article.
 
 Fixed
 ^^^^^

@@ -43,20 +43,19 @@ Use this documentation to get started, explore examples, and understand how to a
 Additional sections such as Concepts, API Reference, and Development are planned and will be added as the PACE framework evolves.
 ## How to cite
 
-If you use **PACE** in your research, please cite our [paper](https://arxiv.org/pdf/2509.06342):
+If you use **PACE** in your research, please cite our [paper](https://doi.org/10.1177/02783649261459628) published in **The International Journal of Robotics Research (IJRR)**. An open-access version is available on [arXiv](https://arxiv.org/abs/2509.06342).
 
 > F. Bjelonic, F. Tischhauser, and M. Hutter,  
-> _Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots_, arXiv:2509.06342, 2025.
+> _Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots_, The International Journal of Robotics Research, 2026. [doi:10.1177/02783649261459628](https://doi.org/10.1177/02783649261459628)
 
 ```bibtex
 @article{bjelonic2025towards,
-  title         = {Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots},
-  author        = {Bjelonic, Filip and Tischhauser, Fabian and Hutter, Marco},
-  journal       = {arXiv preprint arXiv:2509.06342},
-  year          = {2025},
-  eprint        = {2509.06342},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.RO},
+  title     = {Towards Bridging the Gap: Systematic Sim-to-Real Transfer for Diverse Legged Robots},
+  author    = {Bjelonic, Filip and Tischhauser, Fabian and Hutter, Marco},
+  journal   = {The International Journal of Robotics Research},
+  year      = {2026},
+  doi       = {10.1177/02783649261459628},
+  publisher = {SAGE Publications},
 }
 ```
 <video autoplay loop muted playsinline>
