@@ -20,3 +20,10 @@ class PaceDCMotorCfg(DCMotorCfg):
     class_type: type = pace_actuator.PaceDCMotor
     encoder_bias: dict[str, float] | float | None = 0.0
     max_delay: torch.int | None = 0
+    delay_mode: str = "command"
+    """Where the delay acts. Defaults to "command".
+
+    * "command": the targets (joint position, velocity and feed-forward effort) reach the drive late, while the PD
+      controller runs on the current measurements, as on a drive with its own control loop.
+    * "effort": the torque computed from the current measurements is applied late, i.e. the feedback itself is delayed.
+    """
